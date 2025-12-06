@@ -1,4 +1,4 @@
-# Problema Implementado: Desenhar o Besouro Com o Dado
+# Problema: Desenhar o Besouro Com o Dado
 
 ## Descrição
 

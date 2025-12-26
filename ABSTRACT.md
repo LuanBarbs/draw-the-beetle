@@ -1,50 +1,48 @@
-# Resumo da Implementação
+## MiniMax Clássico
+O projeto implementa uma modelagem clássica de Inteligência Artificial para o jogo **Draw the Beetle**, utilizando **MiniMax** e **MiniMax com Poda Alfa-Beta**.
 
-## Projeto
-Este trabalho modela o jogo tradicional "Desenha o Besouro com o Dado" como um problema de decisão sequencial sob incerteza. Diferentemente de abordagens determinísticas, o jogo é tratado como um **processo estocástico**, no qual cada jogada depende do lançamento de um dado justo.
+O fator aleatório do dado foi removido por discretização das ações, mantendo integralmente as regras do jogo original.
 
-O estado do jogo é representado por um vetor discreto que contabiliza as partes do besouro já desenhadas. As transições de estado são condicionadas às regras estruturais do jogo, como dependências hierárquicas entre as peças.
+## Estado do Jogo
+Cada jogador tem seu próprio besouro, representado por um vetor:
 
-Para resolver o problema, são implementados os algoritmos **Expectiminimax** e **Expectiminimax com poda Alfa-Beta**, permitindo comparar desempenho e qualidade da solução. Uma função heurística baseada em progressão estrutural ponderada é utilizada para avaliação de estados não terminais.
+[state_corpo, state_cabeca, state_perna, state_olho, state_antena, state_rabo]
 
-O estudo demonstra como jogos originalmente baseados em sorte podem ser formalmente analisados por técnicas clássicas de Inteligência Artificial.
+Estado inicial:
+[0, 0, 0, 0, 0, 0]
 
-## Regras do Jogo — Transições de Estado
+Estado final:
+[1, 1, 6, 2, 2, 1]
 
-### Dependências Estruturais
-- Corpo:
-  - Pode ser desenhado apenas uma vez
-  - Não depende de nenhuma outra peça
+## Jogadores
+- MAX: Jogador A
+- MIN: Jogador B
 
-- Cabeça:
-  - Requer corpo
-  - Apenas uma vez
+Ambos jogam de forma alternada, tentando completar o próprio besouro primeiro.
 
-- Perna:
-  - Requer corpo
-  - Até 6 vezes
+## Ações Possíveis (sem dado)
+Em cada turno, o jogador pode tentar uma das 6 ações:
 
-- Olho:
-  - Requer cabeça
-  - Até 2 vezes
+| Ação | Peça    |
+|------|---------|
+| 0    | Corpo   |
+| 1    | Cabeça  |
+| 2    | Pernas  |
+| 3    | Olhos   |
+| 4    | Antenas |
+| 5    | Rabo    |
 
-- Antena:
-  - Requer cabeça
-  - Até 2 vezes
+## Regras de Transição
+1. Corpo deve ser o primeiro
+    - Nenhuma outra peça pode ser desenhada antes do corpo.
+2. Cabeça depende do corpo
+3. Olhos e antenas dependem da cabeça
+4. Cada peça tem limite máximo
+    - Corpo: 1
+    - Cabeça: 1
+    - Pernas: 6
+    - Olhos: 2
+    - Antenas: 2
+    - Rabo: 1
 
-- Rabo:
-  - Requer corpo
-  - Apenas uma vez
-
-### Regra do Dado
-Em cada jogada:
-1. O dado é lançado (1 a 6)
-2. A peça correspondente **só é adicionada se respeitar as regras**
-3. Caso contrário, o estado permanece inalterado
-
-## Heurística
-Heurísticas baseadas em desbloqueio estrutural são comuns em jogos construtivos (Pearl, 1984). Corpo e cabeça recebem maior peso por habilitarem futuras ações.
-
-## Observação
-A poda Alfa-Beta não é totalmente eficaz em nós de chance, mas ainda reduz cálculo em práticas reais.
-Memoization é padrão em jogos estocásticos (Russell & Norvig, Cap. 5) para evitar recomputação de estados equivalentes.
+Se uma ação viola regras → ação inválida, não gera sucessor.

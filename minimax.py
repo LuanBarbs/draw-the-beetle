@@ -1,46 +1,127 @@
-from beetle_game import is_terminal, apply_roll
-from heuristics import heuristic
+import math
+from copy import deepcopy
 
-def expectiminimax(state, depth, max_depth, memo):
-    state_key = (tuple(state), depth)
-    if state_key in memo:
-        return memo[state_key]
+try:
+    from heuristics import heuristic as default_heuristic
+except Exception:
+    default_heuristic = None
 
-    if is_terminal(state) or depth == max_depth:
-        value = heuristic(state)
-        memo[state_key] = value
-        return value
 
-    expected_value = 0.0
-    for roll in range(1, 7):
-        next_state = apply_roll(state, roll)
-        value = expectiminimax(next_state, depth + 1, max_depth, memo)
-        expected_value += value / 6.0
+def minimax(game, state_max, state_min, maximizing, tree=None,
+            depth=0, max_depth=None, eval_fn=None):
+    if eval_fn is None:
+        eval_fn = default_heuristic
 
-    memo[state_key] = expected_value
-    return expected_value
+    if game.is_terminal(state_max):
+        return 1, []
+    if game.is_terminal(state_min):
+        return -1, []
 
-def expectiminimax_ab(state, depth, max_depth, alpha, beta, memo_ab):
-    state_key = (tuple(state), depth)
-    if state_key in memo_ab:
-        return memo_ab[state_key]
+    if max_depth is not None and depth >= max_depth:
+        return (eval_fn(state_max, state_min) if eval_fn else 0), []
 
-    if is_terminal(state) or depth == max_depth:
-        value = heuristic(state)
-        memo_ab[state_key] = value
-        return value
+    if maximizing:
+        best_value = -math.inf
+        best_path = []
+        actions = game.valid_actions(state_max)
+        if not actions:
+            return (eval_fn(state_max, state_min) if eval_fn else 0), []
 
-    value = 0.0
-    for roll in range(1, 7):
-        next_state = apply_roll(state, roll)
-        child_value = expectiminimax_ab(
-            next_state, depth + 1, max_depth, alpha, beta, memo_ab
-        )
-        value += child_value / 6.0
+        for action in actions:
+            new_state = game.apply_action(state_max, action)
+            value, path = minimax(game, new_state, state_min, False, tree,
+                                  depth + 1, max_depth, eval_fn)
 
-        if value >= beta:
-            break
-        alpha = max(alpha, value)
+            if tree:
+                tree.add("MAX", deepcopy(new_state), deepcopy(state_min), action, value)
 
-    memo_ab[state_key] = value
-    return value
+            if value > best_value:
+                best_value = value
+                best_path = [("MAX", action)] + path
+
+        return best_value, best_path
+
+    else:
+        best_value = math.inf
+        best_path = []
+        actions = game.valid_actions(state_min)
+        if not actions:
+            return (eval_fn(state_max, state_min) if eval_fn else 0), []
+
+        for action in actions:
+            new_state = game.apply_action(state_min, action)
+            value, path = minimax(game, state_max, new_state, True, tree,
+                                  depth + 1, max_depth, eval_fn)
+
+            if tree:
+                tree.add("MIN", deepcopy(state_max), deepcopy(new_state), action, value)
+
+            if value < best_value:
+                best_value = value
+                best_path = [("MIN", action)] + path
+
+        return best_value, best_path
+
+
+def alphabeta(game, state_max, state_min, alpha, beta, maximizing, tree=None,
+              depth=0, max_depth=None, eval_fn=None):
+    if eval_fn is None:
+        eval_fn = default_heuristic
+
+    if game.is_terminal(state_max):
+        return 1, []
+    if game.is_terminal(state_min):
+        return -1, []
+
+    if max_depth is not None and depth >= max_depth:
+        return (eval_fn(state_max, state_min) if eval_fn else 0), []
+
+    if maximizing:
+        best_path = []
+        actions = game.valid_actions(state_max)
+        if not actions:
+            return (eval_fn(state_max, state_min) if eval_fn else 0), []
+
+        for action in actions:
+            new_state = game.apply_action(state_max, action)
+            value, path = alphabeta(
+                game, new_state, state_min, alpha, beta, False, tree,
+                depth + 1, max_depth, eval_fn
+            )
+
+            if tree:
+                tree.add("MAX", deepcopy(new_state), deepcopy(state_min), action, value)
+
+            if value > alpha:
+                alpha = value
+                best_path = [("MAX", action)] + path
+
+            if alpha >= beta:
+                break
+
+        return alpha, best_path
+
+    else:
+        best_path = []
+        actions = game.valid_actions(state_min)
+        if not actions:
+            return (eval_fn(state_max, state_min) if eval_fn else 0), []
+
+        for action in actions:
+            new_state = game.apply_action(state_min, action)
+            value, path = alphabeta(
+                game, state_max, new_state, alpha, beta, True, tree,
+                depth + 1, max_depth, eval_fn
+            )
+
+            if tree:
+                tree.add("MIN", deepcopy(state_max), deepcopy(new_state), action, value)
+
+            if value < beta:
+                beta = value
+                best_path = [("MIN", action)] + path
+
+            if beta <= alpha:
+                break
+
+        return beta, best_path

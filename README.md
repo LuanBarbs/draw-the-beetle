@@ -1,7 +1,6 @@
 # Problema: Desenhar o Besouro Com o Dado
 
 ## Descrição
-
 - Cada posição do dado desenha uma partedo besouro.
 - O jogador que completar o desenho ganha o jogo.
 - As posições do dado com o desenho são:
@@ -17,40 +16,6 @@
   
 ## Exemplo
 Ver exemplo no vídeo: [Conheça 3 Divertidos Jogos de Dados](https://www.youtube.com/watch?v=5hz3vsVtX7E&t=217s) (3o jogo).
-
-## Jogo Estocástico de Soma Zero
-O projeto implementa o jogo **Desenha o Besouro com o Dado** como um **problema clássico de Inteligência Artificial**, modelado como um **jogo estocástico de soma zero**, utilizando:
-
-- MiniMax
-- MiniMax com Poda Alfa-Beta
-- Nós de Chance (dado)
-
-O objetivo não é jogar interativamente, mas **encontrar políticas ótimas** para completar o besouro no menor número esperado de jogadas.
-
-## Estado do Jogo
-O estado é representado por um vetor:
-
-[corpo, cabeça, pernas, olhos, antenas, rabo]
-
-- Estado inicial: `[0, 0, 0, 0, 0, 0]`
-- Estado final: `[1, 1, 6, 2, 2, 1]`
-
-## O Dado
-O dado é modelado como um **nó de chance**, com 6 resultados equiprováveis:
-
-| Valor | Peça     |
-|------:|----------|
-| 1     | Corpo    |
-| 2     | Cabeça   |
-| 3     | Perna    |
-| 4     | Olho     |
-| 5     | Antena   |
-| 6     | Rabo     |
-
-## Algoritmos
-
-- MiniMax Estocástico (Expectiminimax)
-- MiniMax com Poda Alfa-Beta Parcial
 
 ## Estrutura
 ```

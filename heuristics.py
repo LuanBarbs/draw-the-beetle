@@ -1,10 +1,7 @@
-# Heurística baseada em progressão estrutural
-# Inspirada em Pearl (1984)
+FINAL_STATE = [1, 1, 6, 2, 2, 1]
 
-WEIGHTS = [5, 4, 1, 2, 2, 3]
+def heuristic(state_max, state_min):
+    def progress(state):
+        return sum(state[i] / FINAL_STATE[i] for i in range(6))
 
-def heuristic(state):
-    score = 0
-    for i in range(6):
-        score += WEIGHTS[i] * state[i] / max(1, WEIGHTS[i])
-    return score
+    return progress(state_max) - progress(state_min)

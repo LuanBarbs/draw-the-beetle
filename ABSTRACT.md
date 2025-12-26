@@ -1,33 +1,50 @@
 # Resumo da Implementação
 
-## Representação do Estado
-Vetor de inteiros [0,0,0,0,0,0] para cada jogador.
+## Projeto
+Este trabalho modela o jogo tradicional "Desenha o Besouro com o Dado" como um problema de decisão sequencial sob incerteza. Diferentemente de abordagens determinísticas, o jogo é tratado como um **processo estocástico**, no qual cada jogada depende do lançamento de um dado justo.
 
-## Transição
-- Não usamos dados aleatórios.
-- O jogador escolhe entre Adicionar peças ao seu besouro (respeitando a hierarquia Corpo > Cabeça > Antena) ou Remover peças do oponente (respeitando a hierarquia inversa Antena > Cabeça > Corpo).
+O estado do jogo é representado por um vetor discreto que contabiliza as partes do besouro já desenhadas. As transições de estado são condicionadas às regras estruturais do jogo, como dependências hierárquicas entre as peças.
 
-## Algoritmo
-- Minimax com Poda Alfa-Beta.
-- A função is_terminal detecta a condição de vitória [1, 1, 6, 2, 2, 1].
-- A função evaluate pondera as peças para guiar a IA quando ela não consegue enxergar até o fim do jogo.
+Para resolver o problema, são implementados os algoritmos **Expectiminimax** e **Expectiminimax com poda Alfa-Beta**, permitindo comparar desempenho e qualidade da solução. Uma função heurística baseada em progressão estrutural ponderada é utilizada para avaliação de estados não terminais.
 
-## Desafios
-- O principa desafio é que o jogo original do "Besouro" é puramente estocástico (baseado na sorte do dado) e o Minimax serve para jogos determinísticos de estratégia perfeita.
-- Para que o algoritmo funcione, deve-se adicionar uma mecânica de "Ataque e Defesa". O jogo será transformado em uma Variação Tática, onde em vez de rolar um dado, o jogados escolhe qual peça adicionar (Criar) e qual peça remover do oponente (Sabotar).
+O estudo demonstra como jogos originalmente baseados em sorte podem ser formalmente analisados por técnicas clássicas de Inteligência Artificial.
 
-## Definição de Regras e Estado
+## Regras do Jogo — Transições de Estado
 
-### Construção:
-- Corpo: Sem dependência.
-- Cabeça, Perna, Rabo: Exigem Corpo.
-- Olho, Antena: Exigem Cabeça.
+### Dependências Estruturais
+- Corpo:
+  - Pode ser desenhado apenas uma vez
+  - Não depende de nenhuma outra peça
 
-### Sabotagem (Remoção):
-- Você só pode remover uma peça do oponente se ela não tiver "filhos".
-- Ex: Não pode remover a Cabeça do oponente se ele tiver Olhos. Primeiro remova os Olhos.
+- Cabeça:
+  - Requer corpo
+  - Apenas uma vez
+
+- Perna:
+  - Requer corpo
+  - Até 6 vezes
+
+- Olho:
+  - Requer cabeça
+  - Até 2 vezes
+
+- Antena:
+  - Requer cabeça
+  - Até 2 vezes
+
+- Rabo:
+  - Requer corpo
+  - Apenas uma vez
+
+### Regra do Dado
+Em cada jogada:
+1. O dado é lançado (1 a 6)
+2. A peça correspondente **só é adicionada se respeitar as regras**
+3. Caso contrário, o estado permanece inalterado
 
 ## Heurística
-Como a árvore de decisão pode ser profunda, é necessária uma função que avalie quão bom é um estado caso não cheguemos ao fim.
-- Valor = (Minhas Peças Ponderadas) - (Peças do Oponente Ponderadas).
-- Peso maior para Corpo e Cabeça, pois desbloqueiam outros movimentos.
+Heurísticas baseadas em desbloqueio estrutural são comuns em jogos construtivos (Pearl, 1984). Corpo e cabeça recebem maior peso por habilitarem futuras ações.
+
+## Observação
+A poda Alfa-Beta não é totalmente eficaz em nós de chance, mas ainda reduz cálculo em práticas reais.
+Memoization é padrão em jogos estocásticos (Russell & Norvig, Cap. 5) para evitar recomputação de estados equivalentes.

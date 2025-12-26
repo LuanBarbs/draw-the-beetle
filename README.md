@@ -18,19 +18,51 @@
 ## Exemplo
 Ver exemplo no vídeo: [Conheça 3 Divertidos Jogos de Dados](https://www.youtube.com/watch?v=5hz3vsVtX7E&t=217s) (3o jogo).
 
-## Buscas Implementados
-- Buca Minimax;
-- Busca Poda Alfa-Beta.
+## Jogo Estocástico de Soma Zero
+O projeto implementa o jogo **Desenha o Besouro com o Dado** como um **problema clássico de Inteligência Artificial**, modelado como um **jogo estocástico de soma zero**, utilizando:
+
+- MiniMax
+- MiniMax com Poda Alfa-Beta
+- Nós de Chance (dado)
+
+O objetivo não é jogar interativamente, mas **encontrar políticas ótimas** para completar o besouro no menor número esperado de jogadas.
+
+## Estado do Jogo
+O estado é representado por um vetor:
+
+[corpo, cabeça, pernas, olhos, antenas, rabo]
+
+- Estado inicial: `[0, 0, 0, 0, 0, 0]`
+- Estado final: `[1, 1, 6, 2, 2, 1]`
+
+## O Dado
+O dado é modelado como um **nó de chance**, com 6 resultados equiprováveis:
+
+| Valor | Peça     |
+|------:|----------|
+| 1     | Corpo    |
+| 2     | Cabeça   |
+| 3     | Perna    |
+| 4     | Olho     |
+| 5     | Antena   |
+| 6     | Rabo     |
+
+## Algoritmos
+
+- MiniMax Estocástico (Expectiminimax)
+- MiniMax com Poda Alfa-Beta Parcial
 
 ## Estrutura
 ```
 draw-the-beetle/
 │
-├── README.md         # Instruções
-├── ABSTRACT.md       # Resumo da Implementação
-├── beetle_game.py    # Regras do jogo, Estado e Validação de Movimentos
-├── ai.py             # Implementação do Minimax e Poda Alfa-Beta
-└── main.py           # Loop principal (Menu e execução)
+├── README.md
+├── ABSTRACT.md
+├── beetle_game.py
+├── minimax.py
+├── heuristics.py
+├── tree_visualizer.py
+└── main.py
 ```
 
 ## Como Jogar
@@ -40,4 +72,9 @@ python main.py
 
 py main.py
 ```
-Isso iniciará o menu onde você pode selecionar se quer jogar contra a IA ou assistir duas IAs jogando.
+Isso iniciará o jogo.
+
+## Referências
+- Russell & Norvig — Artificial Intelligence: A Modern Approach
+- Pearl, J. — Heuristics: Intelligent Search Strategies
+- Michie, D. — Game-playing and Problem-solving

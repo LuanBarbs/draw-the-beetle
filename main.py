@@ -8,9 +8,13 @@ def get_human_move(state):
     print("\nJogadas Disponíveis:")
     for i, m in enumerate(moves):
         tipo, idx, target = m
-        acao = "Adicionar" if tipo == 'add' else "REMOVER"
-        alvo = "seu besouro" if target == state.turn else "besouro INIMIGO"
-        print(f"{i}: {acao} {NOMES[idx]} ({alvo})")
+
+        if tipo == 'shield':
+            print(f"{i}: Ativar ESCUDO (Proteção por 2 turnos)")
+        else:
+            acao = "Adicionar" if tipo == 'add' else "REMOVER"
+            alvo = "seu besouro" if target == state.turn else "besouro INIMIGO"
+            print(f"{i}: {acao} {NOMES[idx]} ({alvo})")
 
     while True:
         try:
@@ -55,9 +59,13 @@ def play_game(mode):
 
         # Aplicar movimento
         tipo, idx, target = move
-        desc_acao = "construiu" if tipo == 'add' else "destruiu"
-        quem = "o próprio" if target == current_player else "o INIMIGO"
-        print(f">>> Jogador {current_player+1} {desc_acao} {NOMES[idx]} em {quem}.")
+
+        if tipo == 'shield':
+            print(f">>> Jogador {current_player+1} ativou um ESCUDO!")
+        else:
+            desc_acao = "construiu" if tipo == 'add' else "destruiu"
+            quem = "o próprio" if target == current_player else "o INIMIGO"
+            print(f">>> Jogador {current_player+1} {desc_acao} {NOMES[idx]} em {quem}.")
 
         game = game.apply_move(move)
         game.print_board()

@@ -1,66 +1,40 @@
 import math
-from beetle_game import GameState, LIMITES
+from heuristics import heuristic
 
-PESOS = [10, 8, 2, 3, 3, 2]
+def minimax_alpha_beta(state, depth, alpha, beta, maximizing, player_id):
+    terminal, winner = state.is_terminal()
+    if depth == 0 or terminal:
+        if terminal:
+            return (10000 if winner == player_id else -10000), None
+        return heuristic(state, player_id), None
 
-def evaluate(state, player_idx):
-    """
-    Função de Avaliação Heurística.
-    Retorna um valor numérico indicando a vantagem do player_idx.
-    """
-    terminou, vencedor = state.is_terminal()
-    if terminou:
-        if vencedor == player_idx:
-            return 10000 # Vitória certa
-        else:
-            return -10000 # Derrota certa
-        
-    my_score = 0
-    opp_score = 0
-    
-    opp_idx = 1 - player_idx
+    moves = state.get_valid_moves()
+    if not moves:
+        return heuristic(state, player_id), None
 
-    for i in range(6):
-        my_score += state.board[player_idx][i] * PESOS[i]
-        opp_score += state.board[opp_idx][i] * PESOS[i]
+    best_move = None
 
-    return my_score - opp_score
-
-def minimax_alpha_beta(state, depth, alpha, beta, maximizing_player, player_id):
-    terminou, _ = state.is_terminal()
-    if depth == 0 or terminou:
-        return evaluate(state, player_id), None
-
-    valid_moves = state.get_valid_moves()
-
-    if maximizing_player:
-        max_eval = -math.inf
-        best_move = None
-        for move in valid_moves:
-            child_state = state.apply_move(move)
-            eval_val, _ = minimax_alpha_beta(child_state, depth - 1, alpha, beta, False, player_id)
-            
-            if eval_val > max_eval:
-                max_eval = eval_val
-                best_move = move
-            
-            alpha = max(alpha, eval_val)
+    if maximizing:
+        value = -math.inf
+        for m in moves:
+            child = state.apply_move(m)
+            eval_v, _ = minimax_alpha_beta(child, depth-1, alpha, beta, False, player_id)
+            if eval_v > value:
+                value = eval_v
+                best_move = m
+            alpha = max(alpha, value)
             if beta <= alpha:
-                break # Poda Beta
-        return max_eval, best_move
-    
-    else: # Minimizing player (Oponente)
-        min_eval = math.inf
-        best_move = None
-        for move in valid_moves:
-            child_state = state.apply_move(move)
-            eval_val, _ = minimax_alpha_beta(child_state, depth - 1, alpha, beta, True, player_id)
-            
-            if eval_val < min_eval:
-                min_eval = eval_val
-                best_move = move
-            
-            beta = min(beta, eval_val)
+                break
+        return value, best_move
+    else:
+        value = math.inf
+        for m in moves:
+            child = state.apply_move(m)
+            eval_v, _ = minimax_alpha_beta(child, depth-1, alpha, beta, True, player_id)
+            if eval_v < value:
+                value = eval_v
+                best_move = m
+            beta = min(beta, value)
             if beta <= alpha:
-                break # Poda Alfa
-        return min_eval, best_move
+                break
+        return value, best_move

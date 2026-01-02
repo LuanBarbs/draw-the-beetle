@@ -1,29 +1,32 @@
-MAX_STATE = [1, 1, 6, 2, 2, 1]
+from copy import deepcopy
 
-DEPENDENCIES = {
-    0: [],      # Corpo
-    1: [0],     # Cabeça
-    2: [0],     # Perna
-    3: [1],     # Olho
-    4: [1],     # Antena
-    5: [0]      # Rabo
-}
+FINAL_STATE = [1, 1, 6, 2, 2, 1]
 
-def is_terminal(state):
-    return state == MAX_STATE
+class BeetleGame:
+    def initial_state(self):
+        return [0, 0, 0, 0, 0, 0]
 
-def can_add(state, part):
-    if state[part] >= MAX_STATE[part]:
-        return False
-    for dep in DEPENDENCIES[part]:
-        if state[dep] == 0:
-            return False
-    return True
+    def is_terminal(self, state):
+        return state == FINAL_STATE
 
-def apply_roll(state, roll):
-    part = roll - 1
-    if can_add(state, part):
-        new_state = state.copy()
-        new_state[part] += 1
+    def valid_actions(self, state):
+        actions = []
+        if state[0] < 1:
+            actions.append(0)
+        if state[0] == 1 and state[1] < 1:
+            actions.append(1)
+        if state[0] == 1 and state[2] < 6:
+            actions.append(2)
+        if state[1] == 1 and state[3] < 2:
+            actions.append(3)
+        if state[1] == 1 and state[4] < 2:
+            actions.append(4)
+        if state[0] == 1 and state[5] < 1:
+            actions.append(5)
+        return actions
+
+    def apply_action(self, state, action):
+        new_state = deepcopy(state)
+        if action in self.valid_actions(state):
+            new_state[action] += 1
         return new_state
-    return state
